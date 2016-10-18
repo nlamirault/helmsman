@@ -59,7 +59,10 @@ func (tui *TUI) Setup(k8sclient *k8s.Client) {
 
 	g.SetLayout(layout)
 	g.Cursor = true
-	g.FgColor = gocui.ColorGreen
+	g.FgColor = gocui.ColorWhite
+	g.BgColor = gocui.ColorBlack
+	g.SelFgColor = gocui.ColorYellow
+	g.SelBgColor = gocui.ColorBlack
 	tui.Gocui = g
 	tui.KubernetesClient = k8sclient
 
