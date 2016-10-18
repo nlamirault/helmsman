@@ -22,19 +22,23 @@ import (
 	"github.com/nlamirault/helmsman/k8s"
 )
 
+func printK8SLabels(v *gocui.View, labels map[string]string) {
+	fmt.Fprintf(v, "  * Labels:\n")
+	for _, label := range labels {
+		fmt.Fprintf(v, "    - %s\n", label)
+	}
+}
+
 func printK8SNodes(v *gocui.View, client *k8s.Client) {
 	nodes, err := client.GetNodes()
 	if err != nil {
 		fmt.Fprintf(v, "\033[31;01mKubernetes error:\n%s\033[0m", err.Error())
 	} else {
-		fmt.Fprintf(v, "Nodes:\n\n")
+		// fmt.Fprintf(v, "Nodes:\n\n")
 		for _, node := range nodes.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", node.Name)
 			fmt.Fprintf(v, "  * Creation: %s\n", node.CreationTimestamp)
-			fmt.Fprintf(v, "  * Labels:\n")
-			for _, label := range node.Labels {
-				fmt.Fprintf(v, "    - %s\n", label)
-			}
+			printK8SLabels(v, node.Labels)
 		}
 	}
 }
@@ -44,10 +48,11 @@ func printK8SNamespaces(v *gocui.View, client *k8s.Client) {
 	if err != nil {
 		fmt.Fprintf(v, "\033[31;01mKubernetes error:\n%s\033[0m", err.Error())
 	} else {
-		fmt.Fprintf(v, "Namespaces:\n\n")
+		// fmt.Fprintf(v, "Namespaces:\n\n")
 		for _, namespace := range namespaces.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", namespace.Name)
 			fmt.Fprintf(v, "  * Creation: %s\n", namespace.CreationTimestamp)
+			printK8SLabels(v, namespace.Labels)
 		}
 	}
 }
@@ -57,7 +62,7 @@ func printK8SServices(v *gocui.View, client *k8s.Client) {
 	if err != nil {
 		fmt.Fprintf(v, "\033[31;01mKubernetes error:\n%s\033[0m", err.Error())
 	} else {
-		fmt.Fprintf(v, "Services:\n\n")
+		// fmt.Fprintf(v, "Services:\n\n")
 		for _, service := range services.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", service.Name)
 			fmt.Fprintf(v, "  * Namespace: %s\n", service.Namespace)
@@ -70,11 +75,8 @@ func printK8SServices(v *gocui.View, client *k8s.Client) {
 			for _, ip := range service.Spec.ExternalIPs {
 				fmt.Fprintf(v, "    - %s\n", ip)
 			}
-			fmt.Fprintf(v, "  * Labels:\n")
-			for _, label := range service.Labels {
-				fmt.Fprintf(v, "    - %s\n", label)
-			}
 			fmt.Fprintf(v, "  * ClusterIP: %s\n", service.Spec.ClusterIP)
+			printK8SLabels(v, service.Labels)
 		}
 	}
 }
@@ -84,7 +86,7 @@ func printK8SPersistentVolumes(v *gocui.View, client *k8s.Client) {
 	if err != nil {
 		fmt.Fprintf(v, "\033[31;01mKubernetes error:\n%s\033[0m", err.Error())
 	} else {
-		fmt.Fprintf(v, "Persistent Volumes:\n\n")
+		// fmt.Fprintf(v, "Persistent Volumes:\n\n")
 		for _, volume := range volumes.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", volume.Name)
 		}
@@ -96,9 +98,11 @@ func printK8SDeployments(v *gocui.View, client *k8s.Client) {
 	if err != nil {
 		fmt.Fprintf(v, "\033[31;01mKubernetes error:\n%s\033[0m", err.Error())
 	} else {
-		fmt.Fprintf(v, "Deployments:\n\n")
+		// fmt.Fprintf(v, "Deployments:\n\n")
 		for _, deploy := range deployments.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", deploy.Name)
+			fmt.Fprintf(v, "  * Namespace: %s\n", deploy.Namespace)
+			printK8SLabels(v, deploy.Labels)
 		}
 	}
 }
@@ -108,9 +112,10 @@ func printK8SReplicaSets(v *gocui.View, client *k8s.Client) {
 	if err != nil {
 		fmt.Fprintf(v, "\033[31;01mKubernetes error:\n%s\033[0m", err.Error())
 	} else {
-		fmt.Fprintf(v, "Replica Sets:\n\n")
+		// fmt.Fprintf(v, "Replica Sets:\n\n")
 		for _, replica := range replicasets.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", replica.Name)
+			printK8SLabels(v, replica.Labels)
 		}
 	}
 }
@@ -120,9 +125,11 @@ func printK8SReplicationControllers(v *gocui.View, client *k8s.Client) {
 	if err != nil {
 		fmt.Fprintf(v, "\033[31;01mKubernetes error:\n%s\033[0m", err.Error())
 	} else {
-		fmt.Fprintf(v, "Replication Controllers:\n\n")
+		// fmt.Fprintf(v, "Replication Controllers:\n\n")
 		for _, rc := range rcs.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", rc.Name)
+			fmt.Fprintf(v, "  * Namespace: %s\n", rc.Namespace)
+			printK8SLabels(v, rc.Labels)
 		}
 	}
 }
@@ -132,9 +139,10 @@ func printK8SDaemonSets(v *gocui.View, client *k8s.Client) {
 	if err != nil {
 		fmt.Fprintf(v, "\033[31;01mKubernetes error:\n%s\033[0m", err.Error())
 	} else {
-		fmt.Fprintf(v, "Daemon Sets:\n\n")
+		// fmt.Fprintf(v, "Daemon Sets:\n\n")
 		for _, ds := range sets.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", ds.Name)
+			printK8SLabels(v, ds.Labels)
 		}
 	}
 }
@@ -144,7 +152,7 @@ func printK8SJobs(v *gocui.View, client *k8s.Client) {
 	if err != nil {
 		fmt.Fprintf(v, "\033[31;01mKubernetes error:\n%s\033[0m", err.Error())
 	} else {
-		fmt.Fprintf(v, "Jobs:\n\n")
+		// fmt.Fprintf(v, "Jobs:\n\n")
 		for _, job := range jobs.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", job.Name)
 		}
@@ -156,9 +164,12 @@ func printK8SPods(v *gocui.View, client *k8s.Client) {
 	if err != nil {
 		fmt.Fprintf(v, "\033[31;01mKubernetes error:\n%s\033[0m", err.Error())
 	} else {
-		fmt.Fprintf(v, "Pods:\n\n")
+		// fmt.Fprintf(v, "Pods:\n\n")
 		for _, pod := range pods.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", pod.Name)
+			fmt.Fprintf(v, "  * Namespace: %s\n", pod.Namespace)
+			fmt.Fprintf(v, "  * Status: %s\n", pod.Status.Phase)
+			printK8SLabels(v, pod.Labels)
 		}
 	}
 }
@@ -168,7 +179,7 @@ func printK8SIngresses(v *gocui.View, client *k8s.Client) {
 	if err != nil {
 		fmt.Fprintf(v, "\033[31;01mKubernetes error:\n%s\033[0m", err.Error())
 	} else {
-		fmt.Fprintf(v, "Ingress:\n\n")
+		// fmt.Fprintf(v, "Ingress:\n\n")
 		for _, ingress := range ingresses.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", ingress.Name)
 		}
@@ -180,7 +191,7 @@ func printK8SPersistentVolumeClaims(v *gocui.View, client *k8s.Client) {
 	if err != nil {
 		fmt.Fprintf(v, "\033[31;01mKubernetes error:\n%s\033[0m", err.Error())
 	} else {
-		fmt.Fprintf(v, "Persistent Volume Claims:\n\n")
+		// fmt.Fprintf(v, "Persistent Volume Claims:\n\n")
 		for _, pvc := range pvcs.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", pvc.Name)
 		}
@@ -192,7 +203,7 @@ func printK8SSecrets(v *gocui.View, client *k8s.Client) {
 	if err != nil {
 		fmt.Fprintf(v, "\033[31;01mKubernetes error:\n%s\033[0m", err.Error())
 	} else {
-		fmt.Fprintf(v, "Secrets:\n\n")
+		// fmt.Fprintf(v, "Secrets:\n\n")
 		for _, secret := range secrets.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", secret.Name)
 		}
@@ -204,7 +215,7 @@ func printK8SConfigMaps(v *gocui.View, client *k8s.Client) {
 	if err != nil {
 		fmt.Fprintf(v, "\033[31;01mKubernetes error:\n%s\033[0m", err.Error())
 	} else {
-		fmt.Fprintf(v, "Config Maps:\n\n")
+		// fmt.Fprintf(v, "Config Maps:\n\n")
 		for _, configmap := range configmaps.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", configmap.Name)
 		}

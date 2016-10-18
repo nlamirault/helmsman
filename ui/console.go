@@ -24,21 +24,6 @@ import (
 	"github.com/nlamirault/helmsman/k8s"
 )
 
-// type KubernetesCommand struct {
-// 	Command string
-// }
-
-// type TUI struct {
-// 	Gocui          *gocui.Gui
-// 	KubernetesChan chan<- KubernetesCommand
-// }
-
-// func NewTUI() *TUI {
-// 	return &TUI{
-// 		KubernetesChan: make(chan KubernetesCommand),
-// 	}
-// }
-
 type TUI struct {
 	Gocui            *gocui.Gui
 	KubernetesClient *k8s.Client

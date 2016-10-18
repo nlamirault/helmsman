@@ -19,6 +19,8 @@ import (
 	// "log"
 
 	"github.com/jroimartin/gocui"
+
+	"github.com/nlamirault/helmsman/version"
 )
 
 func layout(g *gocui.Gui) error {
@@ -29,19 +31,20 @@ func layout(g *gocui.Gui) error {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
+		// v.BgColor = gocui.AttrBold
 		v.Editable = false
-		v.Highlight = true
+		// v.Highlight = true
 		v.Title = "Kubernetes"
 		// fmt.Fprintf(v, "%s\n", "Loading...")
 		fmt.Fprintf(v, "\033[34;01m%s\033[0m\n", "Admin")
-		fmt.Fprintf(v, "%s\n", "=================")
+		fmt.Fprintf(v, "%s\n", "===========================")
 		fmt.Fprintf(v, "\033[32;01m%s\033[0m\n", "Namespaces")
 		fmt.Fprintf(v, "\033[32;01m%s\033[0m\n", "Nodes")
 		fmt.Fprintf(v, "\033[32;01m%s\033[0m\n", "Persistent Volumes")
 		fmt.Fprintf(v, "\n\033[34;01m%s\033[0m\n", "Namespace")
-		fmt.Fprintf(v, "\033[32;01m%s\033[0m\n", "=================")
+		fmt.Fprintf(v, "%s\n", "===========================")
 		fmt.Fprintf(v, "\n\033[34;01m%s\033[0m\n", "Workloads")
-		fmt.Fprintf(v, "\033[32;01m%s\033[0m\n", "=================")
+		fmt.Fprintf(v, "%s\n", "===========================")
 		fmt.Fprintf(v, "\033[32;01m%s\033[0m\n", "Deployments")
 		fmt.Fprintf(v, "\033[32;01m%s\033[0m\n", "Replica Sets")
 		fmt.Fprintf(v, "\033[32;01m%s\033[0m\n", "Replication Controllers")
@@ -49,15 +52,15 @@ func layout(g *gocui.Gui) error {
 		fmt.Fprintf(v, "\033[32;01m%s\033[0m\n", "Pet Sets")
 		fmt.Fprintf(v, "\033[32;01m%s\033[0m\n", "Jobs")
 		fmt.Fprintf(v, "\033[32;01m%s\033[0m\n", "Pods")
-		fmt.Fprintf(v, "\n\033[34;01m%s\033[0m\n", "Services and Discovery")
-		fmt.Fprintf(v, "\033[32;01m%s\033[0m\n", "=================")
+		fmt.Fprintf(v, "\n%s\n", "Services and Discovery")
+		fmt.Fprintf(v, "%s\n", "===========================")
 		fmt.Fprintf(v, "\033[32;01m%s\033[0m\n", "Services")
 		fmt.Fprintf(v, "\033[32;01m%s\033[0m\n", "Ingress")
-		fmt.Fprintf(v, "\n\033[34;01m%s\033[0m\n", "Storage")
-		fmt.Fprintf(v, "\033[32;01m%s\033[0m\n", "=================")
+		fmt.Fprintf(v, "\n%s\n", "Storage")
+		fmt.Fprintf(v, "%s\n", "===========================")
 		fmt.Fprintf(v, "\033[32;01m%s\033[0m\n", "Persistent Volume Claims")
 		fmt.Fprintf(v, "\n\033[34;01m%s\033[0m\n", "Config")
-		fmt.Fprintf(v, "\033[32;01m%s\033[0m\n", "=================")
+		fmt.Fprintf(v, "%s\n", "===========================")
 		fmt.Fprintf(v, "\033[32;01m%s\033[0m\n", "Secrets")
 		fmt.Fprintf(v, "\033[32;01m%s\033[0m\n", "Config Maps")
 	}
@@ -67,9 +70,14 @@ func layout(g *gocui.Gui) error {
 		}
 		v.Editable = false
 		v.Wrap = true
-		// if err := g.SetCurrentView("main"); err != nil {
-		// 	return err
-		// }
+		fmt.Fprintf(v, "\n\nWelcome to Helmsman v%s\n", version.Version)
+		fmt.Fprintf(v, "Help:\n\n")
+		fmt.Fprintf(v, " <TAB>  : Move between panes\n")
+		fmt.Fprintf(v, " <keys> : Move cursor\n")
+		fmt.Fprintf(v, " <C-q>  : Quit\n")
+		if err := g.SetCurrentView("main"); err != nil {
+			return err
+		}
 	}
 
 	if v, err := g.SetView("input", -1, maxY-2, maxX, maxY); err != nil {
@@ -79,8 +87,8 @@ func layout(g *gocui.Gui) error {
 		v.Editable = false
 		v.Wrap = true
 	}
-	if err := g.SetCurrentView("side"); err != nil {
-		return err
-	}
+	// if err := g.SetCurrentView("side"); err != nil {
+	// 	return err
+	// }
 	return nil
 }

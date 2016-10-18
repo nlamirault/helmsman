@@ -40,6 +40,7 @@ func registerKeybindings(g *gocui.Gui, k8sclient *k8s.Client) error {
 	// 	return err
 	// }
 
+	// Tab
 	if err := g.SetKeybinding("side", gocui.KeyTab, gocui.ModNone, nextViewHandler); err != nil {
 		return err
 	}
@@ -141,7 +142,7 @@ func kubernetesDispatcher(g *gocui.Gui, v *gocui.View, client *k8s.Client) error
 		mainView.Clear()
 		// mainView.Editable = true
 		mainView.Highlight = true
-		mainView.Title = fmt.Sprintf("Kubernetes [%s]", l)
+		mainView.Title = l
 		mainView.SetCursor(0, 0)
 		mainView.SetOrigin(0, 0)
 		// fmt.Fprintf(mainView, "----> %s\n", l)
