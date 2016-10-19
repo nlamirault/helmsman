@@ -22,6 +22,7 @@ import (
 	"github.com/jroimartin/gocui"
 
 	"github.com/nlamirault/helmsman/k8s"
+	"github.com/nlamirault/helmsman/version"
 )
 
 var (
@@ -35,35 +36,39 @@ func registerKeybindings(g *gocui.Gui, k8sclient *k8s.Client) error {
 	if err := g.SetKeybinding("", gocui.KeyCtrlQ, gocui.ModNone, quitHandler); err != nil {
 		return err
 	}
+	if err := g.SetKeybinding("", gocui.KeyCtrlH, gocui.ModNone, helpHandler); err != nil {
+		return err
+	}
+
 	// Submit a line
 	// if err := g.SetKeybinding("input", gocui.KeyEnter, gocui.ModNone, inputLineHandler); err != nil {
 	// 	return err
 	// }
 
 	// Tab
-	if err := g.SetKeybinding("side", gocui.KeyTab, gocui.ModNone, nextViewHandler); err != nil {
+	if err := g.SetKeybinding(sideViewName, gocui.KeyTab, gocui.ModNone, nextViewHandler); err != nil {
 		return err
 	}
-	if err := g.SetKeybinding("main", gocui.KeyTab, gocui.ModNone, nextViewHandler); err != nil {
+	if err := g.SetKeybinding(mainViewName, gocui.KeyTab, gocui.ModNone, nextViewHandler); err != nil {
 		return err
 	}
 
 	// Cursors
-	if err := g.SetKeybinding("side", gocui.KeyArrowDown, gocui.ModNone, cursorDownHandler); err != nil {
+	if err := g.SetKeybinding(sideViewName, gocui.KeyArrowDown, gocui.ModNone, cursorDownHandler); err != nil {
 		return err
 	}
-	if err := g.SetKeybinding("side", gocui.KeyArrowUp, gocui.ModNone, cursorUpHandler); err != nil {
+	if err := g.SetKeybinding(sideViewName, gocui.KeyArrowUp, gocui.ModNone, cursorUpHandler); err != nil {
 		return err
 	}
-	if err := g.SetKeybinding("side", gocui.KeyEnter, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
+	if err := g.SetKeybinding(sideViewName, gocui.KeyEnter, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
 		return kubernetesDispatcher(g, v, k8sclient)
 	}); err != nil {
 		return err
 	}
-	if err := g.SetKeybinding("main", gocui.KeyArrowDown, gocui.ModNone, cursorDownHandler); err != nil {
+	if err := g.SetKeybinding(mainViewName, gocui.KeyArrowDown, gocui.ModNone, cursorDownHandler); err != nil {
 		return err
 	}
-	if err := g.SetKeybinding("main", gocui.KeyArrowUp, gocui.ModNone, cursorUpHandler); err != nil {
+	if err := g.SetKeybinding(mainViewName, gocui.KeyArrowUp, gocui.ModNone, cursorUpHandler); err != nil {
 		return err
 	}
 
@@ -89,15 +94,30 @@ func quitHandler(g *gocui.Gui, v *gocui.View) error {
 	return gocui.ErrQuit
 }
 
+func helpHandler(g *gocui.Gui, v *gocui.View) error {
+	mainView, err := g.View(mainViewName)
+	if err != nil {
+		return err
+	}
+	mainView.Clear()
+	// mainView.Editable = true
+	mainView.Highlight = true
+	mainView.Title = "Help"
+	mainView.SetCursor(0, 0)
+	mainView.SetOrigin(0, 0)
+	printHelp(mainView)
+	return nil
+}
+
 func nextViewHandler(g *gocui.Gui, v *gocui.View) error {
-	if v == nil || v.Name() == "side" {
-		return g.SetCurrentView("main")
+	if v == nil || v.Name() == sideViewName {
+		return g.SetCurrentView(mainViewName)
 		// } else if v.Name() == "main" {
 		// 	return g.SetCurrentView("input")
 		// } else if v.Name() == "input" {
 		// 	return g.SetCurrentView("side")
 	}
-	return g.SetCurrentView("side")
+	return g.SetCurrentView(sideViewName)
 }
 
 func cursorDownHandler(g *gocui.Gui, v *gocui.View) error {
@@ -135,48 +155,48 @@ func kubernetesDispatcher(g *gocui.Gui, v *gocui.View, client *k8s.Client) error
 			l = ""
 		}
 
-		mainView, err := g.View("main")
+		view, err := g.View(mainViewName)
 		if err != nil {
 			return err
 		}
-		mainView.Clear()
-		// mainView.Editable = true
-		mainView.Highlight = true
-		mainView.Title = l
-		mainView.SetCursor(0, 0)
-		mainView.SetOrigin(0, 0)
+		view.Clear()
+		// view.Editable = true
+		view.Highlight = true
+		view.Title = l
+		view.SetCursor(0, 0)
+		view.SetOrigin(0, 0)
 		// fmt.Fprintf(mainView, "----> %s\n", l)
 		switch l {
-		case "Namespaces":
-			printK8SNamespaces(mainView, client)
-		case "Nodes":
-			printK8SNodes(mainView, client)
-		case "Persitent Volumes":
-			printK8SPersistentVolumes(mainView, client)
-		case "Deployments":
-			printK8SDeployments(mainView, client)
-		case "Replica Sets":
-			printK8SReplicaSets(mainView, client)
-		case "Replication Controllers":
-			printK8SReplicationControllers(mainView, client)
-		case "Daemon Sets":
-			printK8SDaemonSets(mainView, client)
-		case "Jobs":
-			printK8SJobs(mainView, client)
-		case "Pods":
-			printK8SPods(mainView, client)
-		case "Services":
-			printK8SServices(mainView, client)
-		case "Ingress":
-			printK8SIngresses(mainView, client)
-		case "Persistent Volume Claims":
-			printK8SPersistentVolumeClaims(mainView, client)
-		case "Secrets":
-			printK8SSecrets(mainView, client)
-		case "Config Maps":
-			printK8SConfigMaps(mainView, client)
+		case k8sNamespaces:
+			printK8SNamespaces(view, client)
+		case k8sNodes:
+			printK8SNodes(view, client)
+		case k8sPersistentVolumes:
+			printK8SPersistentVolumes(view, client)
+		case k8sDeployments:
+			printK8SDeployments(view, client)
+		case k8sReplicaSets:
+			printK8SReplicaSets(view, client)
+		case k8sReplicationControllers:
+			printK8SReplicationControllers(view, client)
+		case k8sDaemonSets:
+			printK8SDaemonSets(view, client)
+		case k8sJobs:
+			printK8SJobs(view, client)
+		case k8sPods:
+			printK8SPods(view, client)
+		case k8sServices:
+			printK8SServices(view, client)
+		case k8sIngress:
+			printK8SIngresses(view, client)
+		case k8sPersistentVolumeClaims:
+			printK8SPersistentVolumeClaims(view, client)
+		case k8sSecrets:
+			printK8SSecrets(view, client)
+		case k8sConfigMaps:
+			printK8SConfigMaps(view, client)
 		}
-		return g.SetCurrentView("main")
+		return g.SetCurrentView(mainViewName)
 	}
 	return nil
 }
@@ -192,7 +212,7 @@ func inputLineHandler(g *gocui.Gui, v *gocui.View) error {
 	}
 
 	// Get a main view obvject to print output to
-	ov, _ := g.View("main")
+	ov, _ := g.View(mainViewName)
 
 	// Parse if it is an internal command or otherwise
 	if len(line) > 0 && string(line[0]) == "/" {
@@ -235,4 +255,18 @@ func scrollHistory(v *gocui.View, dy int) {
 			v.SetOrigin(0, 0)
 		}
 	}
+}
+
+func printHelp(v *gocui.View) {
+	v.Clear()
+	v.Highlight = true
+	v.Title = "Help"
+	v.SetCursor(0, 0)
+	v.SetOrigin(0, 0)
+	fmt.Fprintf(v, "\n\nWelcome to Helmsman v%s\n", version.Version)
+	fmt.Fprintf(v, "Help:\n\n")
+	fmt.Fprintf(v, " <TAB>    : Move between panes\n")
+	fmt.Fprintf(v, " <Arrows> : Move cursor\n")
+	fmt.Fprintf(v, " <C-q>    : Quit\n")
+	fmt.Fprintf(v, " <C-h>    : Show help message\n")
 }

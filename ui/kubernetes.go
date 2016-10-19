@@ -22,6 +22,42 @@ import (
 	"github.com/nlamirault/helmsman/k8s"
 )
 
+const (
+	k8sAdmin                  = "Admin"
+	k8sNamespaces             = "Namespaces"
+	k8sNodes                  = "Nodes"
+	k8sPersistentVolumes      = "Persistent Volumes"
+	k8sNamespace              = "Namespace"
+	k8sWorkloads              = "Workloads"
+	k8sDeployments            = "Deployments"
+	k8sReplicaSets            = "Replica Sets"
+	k8sReplicationControllers = "Replication Controllers"
+	k8sDaemonSets             = "Daemon Sets"
+	k8sPetSets                = "Pet Sets"
+	k8sJobs                   = "Jobs"
+	k8sPods                   = "Pods"
+	k8sServicesAndDiscovery   = "Service and Discovery"
+	k8sServices               = "Services"
+	k8sIngress                = "Ingress"
+	k8sStorage                = "Storage"
+	k8sPersistentVolumeClaims = "Persistent Volume Claims"
+	k8sConfig                 = "Config"
+	k8sSecrets                = "Secrets"
+	k8sConfigMaps             = "Config Maps"
+)
+
+var (
+	k8sdispatcher = map[string][]string{
+		k8sAdmin:                []string{k8sNamespaces, k8sNodes, k8sPersistentVolumes},
+		k8sNamespace:            []string{},
+		k8sWorkloads:            []string{k8sDeployments, k8sReplicaSets, k8sReplicationControllers, k8sDaemonSets, k8sPetSets, k8sJobs, k8sPods},
+		k8sServicesAndDiscovery: []string{k8sServices, k8sIngress},
+		k8sStorage:              []string{k8sPersistentVolumeClaims},
+		k8sConfig:               []string{k8sSecrets, k8sConfigMaps},
+	}
+	k8smenu = []string{k8sAdmin, k8sNamespace, k8sWorkloads, k8sServicesAndDiscovery, k8sStorage, k8sConfig}
+)
+
 func printK8SLabels(v *gocui.View, labels map[string]string) {
 	fmt.Fprintf(v, "  * Labels:\n")
 	for _, label := range labels {
