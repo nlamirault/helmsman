@@ -4,7 +4,7 @@
 
 This is a simple TextUI for [Kubernetes][].
 
-[![Screenshot](helmsman-0.1.0.png)]
+![Screenshot](helmsman-0.1.0.png)
 
 ## Installation
 
