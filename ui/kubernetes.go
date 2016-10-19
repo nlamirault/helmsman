@@ -74,6 +74,7 @@ func printK8SNodes(v *gocui.View, client *k8s.Client) {
 		for _, node := range nodes.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", node.Name)
 			fmt.Fprintf(v, "  * Creation: %s\n", node.CreationTimestamp)
+			fmt.Fprintf(v, "  * Status: %s\n", node.Status.Phase)
 			printK8SLabels(v, node.Labels)
 		}
 	}
