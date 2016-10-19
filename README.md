@@ -2,8 +2,9 @@
 
 [![License Apache 2][badge-license]](LICENSE)
 
-This is a simple TextUI for Kubernetes
+This is a simple TextUI for [Kubernetes][].
 
+![Screenshot](helmsman-0.1.0.png)
 
 ## Installation
 
@@ -15,6 +16,12 @@ You can download the binaries :
 
 
 ## Usage
+
+Launch UI (example with [minikube][] configuration):
+
+    $ helmsman -kubeconfig ~/.kube/config
+
+Type <kbd>C-q</kbd> to exit.
 
 
 ## Contributing
@@ -37,3 +44,6 @@ A [changelog](ChangeLog.md) is available
 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 [badge-license]: https://img.shields.io/badge/license-Apache2-green.svg?style=flat
+
+[Kubernetes]: https://github.com/kubernetes/kubernetes
+[minikube]: https://github.com/kubernetes/minikube
