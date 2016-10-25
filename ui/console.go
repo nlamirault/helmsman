@@ -51,7 +51,10 @@ func (tui *TUI) Setup(k8sclient *k8s.Client) {
 	tui.Gocui = g
 	tui.KubernetesClient = k8sclient
 
-	registerKeybindings(tui.Gocui, tui.KubernetesClient)
+	err = registerKeybindings(tui.Gocui, tui.KubernetesClient)
+	if err != nil {
+		log.Panicln(err)
+	}
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)

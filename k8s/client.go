@@ -55,6 +55,10 @@ func (client *Client) GetNodes() (*v1.NodeList, error) {
 	return client.Clientset.Core().Nodes().List(api.ListOptions{})
 }
 
+func (client *Client) GetNode(name string) (*v1.Node, error) {
+	return client.Clientset.Core().Nodes().Get(name)
+}
+
 func (client *Client) GetPersistentVolumes() (*v1.PersistentVolumeList, error) {
 	return client.Clientset.Core().PersistentVolumes().List(api.ListOptions{})
 }

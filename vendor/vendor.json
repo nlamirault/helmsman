@@ -55,6 +55,12 @@
 			"revisionTime": "2016-09-22T07:44:15Z"
 		},
 		{
+			"checksumSHA1": "Yn+Uxp0Vz4WiGdrYLLwYX9lzD5I=",
+			"path": "github.com/fatih/color",
+			"revision": "a360acfe359f146180cfc1c6ea6f4397f5c133ec",
+			"revisionTime": "2016-10-18T20:13:48Z"
+		},
+		{
 			"checksumSHA1": "l2w6jertyAzSdcdKIXnHm02X8Jk=",
 			"path": "github.com/ghodss/yaml",
 			"revision": "aa0c862057666179de291b67d9f093d12b5a8473",
@@ -101,6 +107,18 @@
 			"path": "github.com/juju/ratelimit",
 			"revision": "77ed1c8a01217656d2080ad51981f6e99adaa177",
 			"revisionTime": "2015-11-25T20:19:25Z"
+		},
+		{
+			"checksumSHA1": "ugnSryGF6VPBb5s87QgoRH6730g=",
+			"path": "github.com/mattn/go-colorable",
+			"revision": "6c903ff4aa50920ca86087a280590b36b3152b9c",
+			"revisionTime": "2016-09-30T08:41:57Z"
+		},
+		{
+			"checksumSHA1": "xZuhljnmBysJPta/lMyYmJdujCg=",
+			"path": "github.com/mattn/go-isatty",
+			"revision": "66b8e73f3f5cda9f96b69efd03dd3d7fc4a5cdb8",
+			"revisionTime": "2016-08-06T12:27:52Z"
 		},
 		{
 			"checksumSHA1": "yf185lmVPcvXjLZuPT1s4JzxI18=",
@@ -161,6 +179,12 @@
 			"path": "golang.org/x/net/lex/httplex",
 			"revision": "8b4af36cd21a1f85a7484b49feb7c79363106d8e",
 			"revisionTime": "2016-10-13T03:31:11Z"
+		},
+		{
+			"checksumSHA1": "aVgPDgwY3/t4J/JOw9H3FVMHqh0=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "c200b10b5d5e122be351b67af224adc6128af5bf",
+			"revisionTime": "2016-10-22T18:22:21Z"
 		},
 		{
 			"checksumSHA1": "6f8MEU31llHM1sLM/GGH4/Qxu0A=",

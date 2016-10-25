@@ -59,7 +59,7 @@ var (
 )
 
 func printK8SLabels(v *gocui.View, labels map[string]string) {
-	fmt.Fprintf(v, "  * Labels:\n")
+	fmt.Fprintf(v, "  * \033[97;01mLabels:\033[0m\n")
 	for _, label := range labels {
 		fmt.Fprintf(v, "    - %s\n", label)
 	}
@@ -73,10 +73,33 @@ func printK8SNodes(v *gocui.View, client *k8s.Client) {
 		// fmt.Fprintf(v, "Nodes:\n\n")
 		for _, node := range nodes.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", node.Name)
-			fmt.Fprintf(v, "  * Creation: %s\n", node.CreationTimestamp)
-			fmt.Fprintf(v, "  * Status: %s\n", node.Status.Phase)
+			fmt.Fprintf(v, "  * \033[97;01mCreation:\033[0m %s\n", node.CreationTimestamp)
+			fmt.Fprintf(v, "  * \033[97;01mStatus:\033[0m %s\n", node.Status.Phase)
 			printK8SLabels(v, node.Labels)
 		}
+	}
+}
+
+func printK8SNodeDescription(v *gocui.View, name string, client *k8s.Client) {
+	v.Title = name
+	node, err := client.GetNode(name)
+	if err != nil {
+		fmt.Fprintf(v, "\033[31;01mKubernetes error:\n%s\033[0m", err.Error())
+	} else {
+		fmt.Fprintf(v, " > \033[32;01m%s\033[0m\n", "Details")
+		fmt.Fprintf(v, "  * \033[97;01mName:\033[0m %s\n", node.Name)
+		printK8SLabels(v, node.Labels)
+		fmt.Fprintf(v, "\n > \033[32;01m%s\033[0m\n", "System info")
+		fmt.Fprintf(v, "  * \033[97;01mSystem UUID:\033[0m %s\n", node.Status.NodeInfo.SystemUUID)
+		fmt.Fprintf(v, "  * \033[97;01mBoot ID:\033[0m %s\n", node.Status.NodeInfo.BootID)
+		fmt.Fprintf(v, "  * \033[97;01mKernel Version:\033[0m %s\n", node.Status.NodeInfo.KernelVersion)
+		fmt.Fprintf(v, "  * \033[97;01mOS Image:\033[0m %s\n", node.Status.NodeInfo.OSImage)
+		fmt.Fprintf(v, "  * \033[97;01mContainer Runtime Version:\033[0m %s\n", node.Status.NodeInfo.ContainerRuntimeVersion)
+		fmt.Fprintf(v, "  * \033[97;01mKubelet Version:\033[0m %s\n", node.Status.NodeInfo.KubeletVersion)
+		fmt.Fprintf(v, "  * \033[97;01mKube-proxy Version:\033[0m %s\n", node.Status.NodeInfo.KubeProxyVersion)
+		fmt.Fprintf(v, "  * \033[97;01mOperating system:\033[0m %s\n", node.Status.NodeInfo.OperatingSystem)
+		fmt.Fprintf(v, "  * \033[97;01mArchitecture:\033[0m %s\n", node.Status.NodeInfo.Architecture)
+
 	}
 }
 
@@ -88,7 +111,7 @@ func printK8SNamespaces(v *gocui.View, client *k8s.Client) {
 		// fmt.Fprintf(v, "Namespaces:\n\n")
 		for _, namespace := range namespaces.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", namespace.Name)
-			fmt.Fprintf(v, "  * Creation: %s\n", namespace.CreationTimestamp)
+			fmt.Fprintf(v, "  * \033[97;01mCreation:\033[0m %s\n", namespace.CreationTimestamp)
 			printK8SLabels(v, namespace.Labels)
 		}
 	}
@@ -102,17 +125,17 @@ func printK8SServices(v *gocui.View, client *k8s.Client) {
 		// fmt.Fprintf(v, "Services:\n\n")
 		for _, service := range services.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", service.Name)
-			fmt.Fprintf(v, "  * Namespace: %s\n", service.Namespace)
-			fmt.Fprintf(v, "  * Creation: %s\n", service.CreationTimestamp)
-			fmt.Fprintf(v, "  * Ports:\n")
+			fmt.Fprintf(v, "  * \033[97;01mNamespace:\033[0m %s\n", service.Namespace)
+			fmt.Fprintf(v, "  * \033[97;01mCreation:\033[0m %s\n", service.CreationTimestamp)
+			fmt.Fprintf(v, "  * \033[97;01mPorts:\033[0m\n")
 			for _, port := range service.Spec.Ports {
 				fmt.Fprintf(v, "    - %s [%s] %s -> %s\n", port.Name, port.Protocol, port.Port, port.TargetPort)
 			}
-			fmt.Fprintf(v, "  * External IPs:\n")
+			fmt.Fprintf(v, "  * \033[97;01mExternal IPs:\033[0m\n")
 			for _, ip := range service.Spec.ExternalIPs {
 				fmt.Fprintf(v, "    - %s\n", ip)
 			}
-			fmt.Fprintf(v, "  * ClusterIP: %s\n", service.Spec.ClusterIP)
+			fmt.Fprintf(v, "  * \033[97;01mClusterIP:\033[0m %s\n", service.Spec.ClusterIP)
 			printK8SLabels(v, service.Labels)
 		}
 	}
@@ -138,7 +161,7 @@ func printK8SDeployments(v *gocui.View, client *k8s.Client) {
 		// fmt.Fprintf(v, "Deployments:\n\n")
 		for _, deploy := range deployments.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", deploy.Name)
-			fmt.Fprintf(v, "  * Namespace: %s\n", deploy.Namespace)
+			fmt.Fprintf(v, "  * \033[97;01mNamespace:\033[0m %s\n", deploy.Namespace)
 			printK8SLabels(v, deploy.Labels)
 		}
 	}
@@ -165,7 +188,7 @@ func printK8SReplicationControllers(v *gocui.View, client *k8s.Client) {
 		// fmt.Fprintf(v, "Replication Controllers:\n\n")
 		for _, rc := range rcs.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", rc.Name)
-			fmt.Fprintf(v, "  * Namespace: %s\n", rc.Namespace)
+			fmt.Fprintf(v, "  * \033[97;01mNamespace:\033[0m %s\n", rc.Namespace)
 			printK8SLabels(v, rc.Labels)
 		}
 	}
@@ -204,8 +227,8 @@ func printK8SPods(v *gocui.View, client *k8s.Client) {
 		// fmt.Fprintf(v, "Pods:\n\n")
 		for _, pod := range pods.Items {
 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", pod.Name)
-			fmt.Fprintf(v, "  * Namespace: %s\n", pod.Namespace)
-			fmt.Fprintf(v, "  * Status: %s\n", pod.Status.Phase)
+			fmt.Fprintf(v, "  * \033[97;01mNamespace:\033[0m %s\n", pod.Namespace)
+			fmt.Fprintf(v, "  * \033[97;01mStatus:\033[0m %s\n", pod.Status.Phase)
 			printK8SLabels(v, pod.Labels)
 		}
 	}

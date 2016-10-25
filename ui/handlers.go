@@ -46,10 +46,7 @@ func registerKeybindings(g *gocui.Gui, k8sclient *k8s.Client) error {
 	// }
 
 	// Tab
-	if err := g.SetKeybinding(sideViewName, gocui.KeyTab, gocui.ModNone, nextViewHandler); err != nil {
-		return err
-	}
-	if err := g.SetKeybinding(mainViewName, gocui.KeyTab, gocui.ModNone, nextViewHandler); err != nil {
+	if err := g.SetKeybinding("", gocui.KeyTab, gocui.ModNone, nextViewHandler); err != nil {
 		return err
 	}
 
@@ -61,7 +58,7 @@ func registerKeybindings(g *gocui.Gui, k8sclient *k8s.Client) error {
 		return err
 	}
 	if err := g.SetKeybinding(sideViewName, gocui.KeyEnter, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
-		return kubernetesDispatcher(g, v, k8sclient)
+		return kubernetesMenuDispatcher(g, v, k8sclient)
 	}); err != nil {
 		return err
 	}
@@ -72,26 +69,45 @@ func registerKeybindings(g *gocui.Gui, k8sclient *k8s.Client) error {
 		return err
 	}
 
+	// Details
+	if err := g.SetKeybinding(mainViewName, gocui.KeyCtrlD, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
+		return kubernetesDescriptionDispatcher(g, v, k8sclient)
+	}); err != nil {
+		return err
+	}
+	if err := g.SetKeybinding(detailViewName, gocui.KeyCtrlW, gocui.ModNone, closeDetailsViewHandler); err != nil {
+		return err
+	}
+
 	// Arrow up/down scrolls cmd history
-	if err := g.SetKeybinding("input", gocui.KeyArrowUp, gocui.ModNone,
-		func(g *gocui.Gui, v *gocui.View) error {
-			scrollHistory(v, -1)
-			return nil
-		}); err != nil {
-		return err
-	}
-	if err := g.SetKeybinding("input", gocui.KeyArrowDown, gocui.ModNone,
-		func(g *gocui.Gui, v *gocui.View) error {
-			scrollHistory(v, 1)
-			return nil
-		}); err != nil {
-		return err
-	}
+	// if err := g.SetKeybinding("input", gocui.KeyArrowUp, gocui.ModNone,
+	// 	func(g *gocui.Gui, v *gocui.View) error {
+	// 		scrollHistory(v, -1)
+	// 		return nil
+	// 	}); err != nil {
+	// 	return err
+	// }
+	// if err := g.SetKeybinding("input", gocui.KeyArrowDown, gocui.ModNone,
+	// 	func(g *gocui.Gui, v *gocui.View) error {
+	// 		scrollHistory(v, 1)
+	// 		return nil
+	// 	}); err != nil {
+	// 	return err
+	// }
 	return nil
 }
 
 func quitHandler(g *gocui.Gui, v *gocui.View) error {
 	return gocui.ErrQuit
+}
+
+func closeDetailsViewHandler(g *gocui.Gui, v *gocui.View) error {
+	// if _, err := setCurrentViewOnTop(g, mainViewName); err != nil {
+	// 	return err
+	// }
+	// return nil
+	log.Printf("View: %s", v.Name())
+	return closeView(g, v)
 }
 
 func helpHandler(g *gocui.Gui, v *gocui.View) error {
@@ -103,21 +119,36 @@ func helpHandler(g *gocui.Gui, v *gocui.View) error {
 	// mainView.Editable = true
 	mainView.Highlight = true
 	mainView.Title = "Help"
-	mainView.SetCursor(0, 0)
-	mainView.SetOrigin(0, 0)
+	clearView(mainView)
 	printHelp(mainView)
 	return nil
 }
 
 func nextViewHandler(g *gocui.Gui, v *gocui.View) error {
-	if v == nil || v.Name() == sideViewName {
-		return g.SetCurrentView(mainViewName)
-		// } else if v.Name() == "main" {
-		// 	return g.SetCurrentView("input")
-		// } else if v.Name() == "input" {
-		// 	return g.SetCurrentView("side")
+	if v == nil {
+		if _, err := g.SetCurrentView(mainViewName); err != nil {
+			return err
+		}
+		return nil
 	}
-	return g.SetCurrentView(sideViewName)
+	switch v.Name() {
+	case sideViewName:
+		if _, err := g.SetCurrentView(mainViewName); err != nil {
+			return err
+		}
+		return nil
+	case mainViewName:
+		if _, err := g.SetCurrentView(sideViewName); err != nil {
+			return err
+		}
+		return nil
+	case detailViewName:
+		if _, err := g.SetCurrentView(sideViewName); err != nil {
+			return err
+		}
+		return nil
+	}
+	return nil
 }
 
 func cursorDownHandler(g *gocui.Gui, v *gocui.View) error {
@@ -146,8 +177,8 @@ func cursorUpHandler(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
-func kubernetesDispatcher(g *gocui.Gui, v *gocui.View, client *k8s.Client) error {
-	// log.Printf("[DEBUG] Select cursor")
+func kubernetesMenuDispatcher(g *gocui.Gui, v *gocui.View, client *k8s.Client) error {
+	log.Printf("[DEBUG] Select cursor")
 	if v != nil {
 		_, cy := v.Cursor()
 		l, err := v.Line(cy)
@@ -163,9 +194,8 @@ func kubernetesDispatcher(g *gocui.Gui, v *gocui.View, client *k8s.Client) error
 		// view.Editable = true
 		view.Highlight = true
 		view.Title = l
-		view.SetCursor(0, 0)
-		view.SetOrigin(0, 0)
-		// fmt.Fprintf(mainView, "----> %s\n", l)
+		clearView(view)
+		fmt.Printf("----> %s\n", view.Name())
 		switch l {
 		case k8sNamespaces:
 			printK8SNamespaces(view, client)
@@ -196,7 +226,69 @@ func kubernetesDispatcher(g *gocui.Gui, v *gocui.View, client *k8s.Client) error
 		case k8sConfigMaps:
 			printK8SConfigMaps(view, client)
 		}
-		return g.SetCurrentView(mainViewName)
+		fmt.Printf("Active view %s", view.Name())
+		if _, err := g.SetCurrentView(mainViewName); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func kubernetesDescriptionDispatcher(g *gocui.Gui, v *gocui.View, client *k8s.Client) error {
+	if v != nil {
+		_, cy := v.Cursor()
+		line, err := v.Line(cy)
+		if err != nil {
+			line = ""
+		}
+		view, err := g.View(detailViewName)
+		if err != nil {
+			return err
+		}
+		view.Clear()
+		// view.Editable = true
+		view.Highlight = true
+		// view.Title = "Details"
+		clearView(view)
+		data := strings.Split(line, " ")
+		if len(data) < 2 {
+			return fmt.Errorf("Can't extract Kubernetes information: %s", line)
+		}
+		fmt.Printf("----> %s\n", view.Name())
+		switch view.Title {
+		case k8sNamespaces:
+			fmt.Fprintf(view, "1111111&")
+		case k8sNodes:
+			printK8SNodeDescription(view, data[1], client)
+		case k8sPersistentVolumes:
+			fmt.Fprintf(view, "3333")
+		case k8sDeployments:
+			fmt.Fprintf(view, "44444444444")
+		case k8sReplicaSets:
+			fmt.Fprintf(view, "55555555")
+		case k8sReplicationControllers:
+			fmt.Fprintf(view, "666666666666-")
+		case k8sDaemonSets:
+			fmt.Fprintf(view, "77777777777")
+		case k8sJobs:
+			fmt.Fprintf(view, "888888888888")
+		case k8sPods:
+			fmt.Fprintf(view, "99999999999")
+		case k8sServices:
+			fmt.Fprintf(view, "111111100000000")
+		case k8sIngress:
+			fmt.Fprintf(view, "11111111111111111111111111111111")
+		case k8sPersistentVolumeClaims:
+			fmt.Fprintf(view, "12222222222222222222é")
+		case k8sSecrets:
+			fmt.Fprintf(view, "13333333333333")
+		case k8sConfigMaps:
+			fmt.Fprintf(view, "14444444444444")
+		}
+		fmt.Printf("Active view %s", view.Name())
+		if _, err := setCurrentViewOnTop(g, view.Name()); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -267,6 +359,7 @@ func printHelp(v *gocui.View) {
 	fmt.Fprintf(v, "Keybindings:\n\n")
 	fmt.Fprintf(v, " TAB      : Next view\n")
 	fmt.Fprintf(v, " ← ↑ → ↓  : Move cursor\n")
+	fmt.Fprintf(v, " ^d       : Describe Kubernetes entity")
 	fmt.Fprintf(v, " ^q       : Quit\n")
 	fmt.Fprintf(v, " ^h       : Show help message\n")
 }

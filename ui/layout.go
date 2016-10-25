@@ -22,15 +22,35 @@ import (
 )
 
 const (
-	sideViewName  = "side"
-	mainViewName  = "main"
-	inputViewName = "input"
+	sideViewName   = "side"
+	mainViewName   = "main"
+	detailViewName = "detail"
+	inputViewName  = "input"
+	menuWidth      = 30
+	inputHeight    = 1
 )
 
 func layout(g *gocui.Gui) error {
-	maxX, maxY := g.Size()
-	const menuWidth = 30
-	const inputHeight = 1
+	if err := setSideLayout(g); err != nil {
+		return err
+	}
+	if err := setSummaryLayout(g); err != nil {
+		return err
+	}
+	if err := setDetailLayout(g); err != nil {
+		return err
+	}
+	if err := setDetailLayout(g); err != nil {
+		return err
+	}
+	if _, err := g.SetViewOnTop(mainViewName); err != nil {
+		return err
+	}
+	return nil
+}
+
+func setSideLayout(g *gocui.Gui) error {
+	_, maxY := g.Size()
 	if v, err := g.SetView(sideViewName, 0, 0, menuWidth-1, maxY-inputHeight); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
@@ -47,6 +67,11 @@ func layout(g *gocui.Gui) error {
 			}
 		}
 	}
+	return nil
+}
+
+func setSummaryLayout(g *gocui.Gui) error {
+	maxX, maxY := g.Size()
 	if v, err := g.SetView(mainViewName, menuWidth, 0, maxX-1, maxY-1); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
@@ -54,11 +79,31 @@ func layout(g *gocui.Gui) error {
 		v.Editable = false
 		v.Wrap = true
 		printHelp(v)
-		if err := g.SetCurrentView(mainViewName); err != nil {
+		if _, err := g.SetCurrentView(mainViewName); err != nil {
 			return err
 		}
 	}
+	return nil
+}
 
+func setDetailLayout(g *gocui.Gui) error {
+	maxX, maxY := g.Size()
+	if v, err := g.SetView(detailViewName, menuWidth, 0, maxX-1, maxY-1); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+		v.Editable = false
+		v.Wrap = true
+		printHelp(v)
+		if _, err := g.SetCurrentView(detailViewName); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func setInputLatout(g *gocui.Gui) error {
+	maxX, maxY := g.Size()
 	if v, err := g.SetView(inputViewName, -1, maxY-2, maxX, maxY); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
