@@ -15,7 +15,9 @@
 package k8s
 
 import (
-	"log"
+	// "log"
+
+	"github.com/golang/glog"
 
 	"k8s.io/client-go/1.4/kubernetes"
 	"k8s.io/client-go/1.4/pkg/api"
@@ -31,13 +33,13 @@ type Client struct {
 
 // NewKubernetesClient create new Kubernetes client using configuration from kubectl.
 func NewKubernetesClient(kubeconfigPath string) (*Client, error) {
-	// uses the current context in kubeconfig
-	log.Printf("[DEBUG] Load Kubernetes configuration from %s", kubeconfigPath)
+	glog.V(2).Infof("Load Kubernetes configuration from %s", kubeconfigPath)
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("[DEBUG] Creates the Kubernetes clientset")
+
+	glog.V(2).Info("Creates the Kubernetes clientset")
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		return nil, err
