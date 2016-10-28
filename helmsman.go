@@ -17,42 +17,66 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
+	// "log"
 	"os"
+
+	"github.com/golang/glog"
 
 	"github.com/nlamirault/helmsman/k8s"
 	"github.com/nlamirault/helmsman/ui"
-	"github.com/nlamirault/helmsman/version"
+	vers "github.com/nlamirault/helmsman/version"
 )
 
-func main() {
-	var (
-		showVersion = flag.Bool("version", false, "Print version information.")
-		kubeconfig  = flag.String("kubeconfig", "./config", "Absolute path to the kubeconfig file")
-	)
+const (
+	// BANNER is what is printed for help/info output.
+	BANNER = "Hellsman - v%s\n"
+)
+
+var (
+	debug      bool
+	version    bool
+	kubeconfig string
+)
+
+func usageAndExit(message string, exitCode int) {
+	if message != "" {
+		fmt.Fprintf(os.Stderr, message)
+		fmt.Fprintf(os.Stderr, "\n\n")
+	}
+	flag.Usage()
+	fmt.Fprintf(os.Stderr, "\n")
+	os.Exit(exitCode)
+}
+
+func init() {
+	flag.BoolVar(&version, "version", false, "print version and exit")
+	flag.BoolVar(&debug, "d", false, "run in debug mode")
+	flag.StringVar(&kubeconfig, "kubeconfig", "", "Absolute path to the kubeconfig file")
+
+	flag.Usage = func() {
+		fmt.Fprint(os.Stderr, fmt.Sprintf(BANNER, vers.Version))
+		flag.PrintDefaults()
+	}
 	flag.Parse()
 
-	if *showVersion {
-		fmt.Printf("Helsman. The Kubernetes Text UI. v%s\n", version.Version)
+	if version {
+		fmt.Printf("Helsman. The Kubernetes Text UI. v%s\n", vers.Version)
 		os.Exit(0)
 	}
 
-	k8sclient, err := k8s.NewKubernetesClient(*kubeconfig)
+	if kubeconfig == "" {
+		usageAndExit("kubeconfig filename cannot be empty.", 1)
+	}
+}
+
+func main() {
+	k8sclient, err := k8s.NewKubernetesClient(kubeconfig)
 	if err != nil {
-		log.Printf("[ERROR] Kubernetes client failed: %s", err.Error())
+		glog.Errorf("[ERROR] Kubernetes client failed: %s", err.Error())
 		os.Exit(1)
 	}
 
-	log.Printf("[INFO] Helmsman using :%s", k8sclient)
+	glog.Infof("Helmsman using :%s", k8sclient)
 	tui := ui.TUI{}
-	// gui.Setup(func(gui *console.GUI) {
-	// 	gui.Gocui.SetKeybinding("input", gocui.KeyEnter, gocui.ModNone,
-	// 		func(_gocui *gocui.Gui, _v *gocui.View) error {
-	// 			return inputhandler.Handle(stdHandler, travianHandler, trav, gui, _v)
-	// 		})
-
-	// 	gui.Println("Welcome to Hellsman")
-	// })
 	tui.Setup(k8sclient)
-
 }
