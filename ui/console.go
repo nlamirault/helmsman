@@ -16,9 +16,10 @@ package ui
 
 import (
 	//"fmt"
-	"log"
+	// "log"
 	// "time"
 
+	"github.com/golang/glog"
 	"github.com/jroimartin/gocui"
 
 	"github.com/nlamirault/helmsman/k8s"
@@ -30,14 +31,14 @@ type TUI struct {
 }
 
 func (tui *TUI) Setup(k8sclient *k8s.Client) {
-
+	glog.V(2).Info("Create UI")
 	var err error
 
 	g := gocui.NewGui()
 	// g.ShowCursor = true
 
 	if err = g.Init(); err != nil {
-		log.Panicln(err)
+		glog.Fatalf("UI Failed: %s", err)
 	}
 
 	defer g.Close()
@@ -53,10 +54,10 @@ func (tui *TUI) Setup(k8sclient *k8s.Client) {
 
 	err = registerKeybindings(tui.Gocui, tui.KubernetesClient)
 	if err != nil {
-		log.Panicln(err)
+		glog.Fatalf("Initialize keybindings failed: %s", err)
 	}
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
-		log.Panicln(err)
+		glog.Fatalf("UI failed: %s", err)
 	}
 }

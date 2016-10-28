@@ -16,9 +16,10 @@ package ui
 
 import (
 	"fmt"
-	"log"
+	// "log"
 	"strings"
 
+	"github.com/golang/glog"
 	"github.com/jroimartin/gocui"
 
 	"github.com/nlamirault/helmsman/k8s"
@@ -31,7 +32,7 @@ var (
 )
 
 func registerKeybindings(g *gocui.Gui, k8sclient *k8s.Client) error {
-	log.Printf("[DEBUG] Register keybindings")
+	glog.V(2).Info("Register keybindings")
 	// Set quit
 	if err := g.SetKeybinding("", gocui.KeyCtrlQ, gocui.ModNone, quitHandler); err != nil {
 		return err
@@ -106,7 +107,7 @@ func closeDetailsViewHandler(g *gocui.Gui, v *gocui.View) error {
 	// 	return err
 	// }
 	// return nil
-	log.Printf("View: %s", v.Name())
+	glog.V(2).Infof("View: %s", v.Name())
 	return closeView(g, v)
 }
 
@@ -178,7 +179,7 @@ func cursorUpHandler(g *gocui.Gui, v *gocui.View) error {
 }
 
 func kubernetesMenuDispatcher(g *gocui.Gui, v *gocui.View, client *k8s.Client) error {
-	log.Printf("[DEBUG] Select cursor")
+	glog.V(2).Info("Select cursor")
 	if v != nil {
 		_, cy := v.Cursor()
 		l, err := v.Line(cy)
@@ -195,7 +196,6 @@ func kubernetesMenuDispatcher(g *gocui.Gui, v *gocui.View, client *k8s.Client) e
 		view.Highlight = true
 		view.Title = l
 		clearView(view)
-		fmt.Printf("----> %s\n", view.Name())
 		switch l {
 		case k8sNamespaces:
 			printK8SNamespaces(view, client)
@@ -226,7 +226,7 @@ func kubernetesMenuDispatcher(g *gocui.Gui, v *gocui.View, client *k8s.Client) e
 		case k8sConfigMaps:
 			printK8SConfigMaps(view, client)
 		}
-		fmt.Printf("Active view %s", view.Name())
+		glog.V(2).Infof("Active view: =========> %s\n", view.Name())
 		if _, err := g.SetCurrentView(mainViewName); err != nil {
 			return err
 		}
@@ -254,7 +254,7 @@ func kubernetesDescriptionDispatcher(g *gocui.Gui, v *gocui.View, client *k8s.Cl
 		if len(data) < 2 {
 			return fmt.Errorf("Can't extract Kubernetes information: %s", line)
 		}
-		fmt.Printf("----> %s\n", view.Name())
+		glog.Infof("----> %s\n", view.Name())
 		switch view.Title {
 		case k8sNamespaces:
 			fmt.Fprintf(view, "1111111&")
@@ -285,7 +285,7 @@ func kubernetesDescriptionDispatcher(g *gocui.Gui, v *gocui.View, client *k8s.Cl
 		case k8sConfigMaps:
 			fmt.Fprintf(view, "14444444444444")
 		}
-		fmt.Printf("Active view %s", view.Name())
+		glog.Infof("#################### Active view %s", view.Name())
 		if _, err := setCurrentViewOnTop(g, view.Name()); err != nil {
 			return err
 		}
