@@ -238,7 +238,11 @@ func kubernetesDescriptionDispatcher(g *gocui.Gui, view *gocui.View, client *k8s
 		_, cy := view.Cursor()
 		line, err := view.Line(cy)
 		if err != nil {
-			line = ""
+			fmt.Fprintf(view, "\033[31;01mInput error:\n%s\033[0m", err.Error())
+			return nil
+		}
+		if len(line) == 0 {
+			return nil
 		}
 		// view, err := g.View(detailViewName)
 		// if err != nil {
@@ -251,7 +255,7 @@ func kubernetesDescriptionDispatcher(g *gocui.Gui, view *gocui.View, client *k8s
 		clearView(view)
 		data := strings.Split(line, " ")
 		if len(data) < 2 {
-			return fmt.Errorf("Can't extract Kubernetes information: %s", line)
+			fmt.Fprintf(view, "\033[31;01mCan't extract Kubernetes information: \n%s\033[0m", line)
 		}
 		// glog.Infof("----> %s ==========> %s ========> %s\n", v.Name(), v.Title, line)
 		switch view.Title {
