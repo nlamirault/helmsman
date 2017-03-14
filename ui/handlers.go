@@ -359,7 +359,7 @@ func printHelp(v *gocui.View) {
 	fmt.Fprintf(v, "Keybindings:\n\n")
 	fmt.Fprintf(v, " TAB      : Next view\n")
 	fmt.Fprintf(v, " ← ↑ → ↓  : Move cursor\n")
-	fmt.Fprintf(v, " ^d       : Describe Kubernetes entity")
+	fmt.Fprintf(v, " ^d       : Describe Kubernetes entity\n")
 	fmt.Fprintf(v, " ^q       : Quit\n")
 	fmt.Fprintf(v, " ^h       : Show help message\n")
 }
