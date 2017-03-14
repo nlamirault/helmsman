@@ -119,6 +119,21 @@ func printK8SNamespaces(v *gocui.View, client *k8s.Client) {
 	}
 }
 
+func printK8SNamespaceDescription(v *gocui.View, name string, client *k8s.Client) {
+	glog.V(2).Infof("Description for namespace: %s", name)
+	v.Title = name
+	namespace, err := client.GetNamespace(name)
+	if err != nil {
+		fmt.Fprintf(v, "\033[31;01mKubernetes error:\n%s\033[0m", err.Error())
+		return
+	}
+	fmt.Fprintf(v, " > \033[32;01m%s\033[0m\n", "Details")
+	fmt.Fprintf(v, "  * \033[97;01mName:\033[0m %s\n", namespace.Name)
+	fmt.Fprintf(v, "  * \033[97;01mCreation:\033[0m %s\n", namespace.CreationTimestamp)
+	fmt.Fprintf(v, "  * \033[97;01mStatus:\033[0m %s\n", namespace.Status.Phase)
+	printK8SLabels(v, namespace.Labels)
+}
+
 func printK8SServices(v *gocui.View, client *k8s.Client) {
 	services, err := client.GetServices()
 	if err != nil {
@@ -131,7 +146,7 @@ func printK8SServices(v *gocui.View, client *k8s.Client) {
 			fmt.Fprintf(v, "  * \033[97;01mCreation:\033[0m %s\n", service.CreationTimestamp)
 			fmt.Fprintf(v, "  * \033[97;01mPorts:\033[0m\n")
 			for _, port := range service.Spec.Ports {
-				fmt.Fprintf(v, "    - %s [%s] %d -> %d\n", port.Name, port.Protocol, port.Port, port.TargetPort)
+				fmt.Fprintf(v, "    - %s [%s] %d -> %d\n", port.Name, port.Protocol, port.Port, port.TargetPort.IntValue())
 			}
 			fmt.Fprintf(v, "  * \033[97;01mExternal IPs:\033[0m\n")
 			for _, ip := range service.Spec.ExternalIPs {
@@ -194,6 +209,20 @@ func printK8SReplicationControllers(v *gocui.View, client *k8s.Client) {
 			printK8SLabels(v, rc.Labels)
 		}
 	}
+}
+
+func printK8SReplicationControllerDescription(v *gocui.View, name string, client *k8s.Client) {
+	glog.V(2).Infof("Description for replication controller: %s", name)
+	v.Title = name
+	rc, err := client.GetReplicationController(name)
+	if err != nil {
+		fmt.Fprintf(v, "\033[31;01mKubernetes error:\n%s\033[0m", err.Error())
+		return
+	}
+	fmt.Fprintf(v, " > \033[32;01m%s\033[0m\n", "Details")
+	fmt.Fprintf(v, "  * \033[97;01mName:\033[0m %s\n", rc.Name)
+	fmt.Fprintf(v, "  * \033[97;01mStatus:\033[0m %s\n", rc.Status)
+	printK8SLabels(v, rc.Labels)
 }
 
 func printK8SDaemonSets(v *gocui.View, client *k8s.Client) {

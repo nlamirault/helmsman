@@ -260,33 +260,33 @@ func kubernetesDescriptionDispatcher(g *gocui.Gui, view *gocui.View, client *k8s
 		// glog.Infof("----> %s ==========> %s ========> %s\n", v.Name(), v.Title, line)
 		switch view.Title {
 		case k8sNamespaces:
-			fmt.Fprintf(view, "1111111&")
+			printK8SNamespaceDescription(view, data[1], client)
 		case k8sNodes:
 			printK8SNodeDescription(view, data[1], client)
 		case k8sPersistentVolumes:
-			fmt.Fprintf(view, "3333")
+			fmt.Fprint(view, "\033[31;01mNot implemented.\n\033[0m")
 		case k8sDeployments:
-			fmt.Fprintf(view, "44444444444")
+			fmt.Fprint(view, "\033[31;01mNot implemented.\n\033[0m")
 		case k8sReplicaSets:
-			fmt.Fprintf(view, "55555555")
+			fmt.Fprint(view, "\033[31;01mNot implemented.\n\033[0m")
 		case k8sReplicationControllers:
-			fmt.Fprintf(view, "666666666666-")
+			printK8SReplicationControllerDescription(view, data[1], client)
 		case k8sDaemonSets:
-			fmt.Fprintf(view, "77777777777")
+			fmt.Fprint(view, "\033[31;01mNot implemented.\n\033[0m")
 		case k8sJobs:
-			fmt.Fprintf(view, "888888888888")
+			fmt.Fprint(view, "\033[31;01mNot implemented.\n\033[0m")
 		case k8sPods:
-			fmt.Fprintf(view, "99999999999")
+			fmt.Fprint(view, "\033[31;01mNot implemented.\n\033[0m")
 		case k8sServices:
-			fmt.Fprintf(view, "111111100000000")
+			fmt.Fprint(view, "\033[31;01mNot implemented.\n\033[0m")
 		case k8sIngress:
-			fmt.Fprintf(view, "11111111111111111111111111111111")
+			fmt.Fprint(view, "\033[31;01mNot implemented.\n\033[0m")
 		case k8sPersistentVolumeClaims:
-			fmt.Fprintf(view, "12222222222222222222é")
+			fmt.Fprint(view, "\033[31;01mNot implemented.\n\033[0m")
 		case k8sSecrets:
-			fmt.Fprintf(view, "13333333333333")
+			fmt.Fprint(view, "\033[31;01mNot implemented.\n\033[0m")
 		case k8sConfigMaps:
-			fmt.Fprintf(view, "14444444444444")
+			fmt.Fprint(view, "\033[31;01mNot implemented.\n\033[0m")
 		}
 		if _, err := setCurrentViewOnTop(g, view.Name()); err != nil {
 			return err

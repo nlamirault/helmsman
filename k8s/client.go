@@ -53,6 +53,10 @@ func (client *Client) GetNamespaces() (*v1.NamespaceList, error) {
 	return client.Clientset.Core().Namespaces().List(metav1.ListOptions{})
 }
 
+func (client *Client) GetNamespace(name string) (*v1.Namespace, error) {
+	return client.Clientset.Core().Namespaces().Get(name, metav1.GetOptions{})
+}
+
 func (client *Client) GetNodes() (*v1.NodeList, error) {
 	return client.Clientset.Core().Nodes().List(metav1.ListOptions{})
 }
@@ -75,6 +79,10 @@ func (client *Client) GetReplicaSets() (*v1beta1.ReplicaSetList, error) {
 
 func (client *Client) GetReplicationControllers() (*v1.ReplicationControllerList, error) {
 	return client.Clientset.Core().ReplicationControllers("").List(metav1.ListOptions{})
+}
+
+func (client *Client) GetReplicationController(name string) (*v1.ReplicationController, error) {
+	return client.Clientset.Core().ReplicationControllers("").Get(name, metav1.GetOptions{})
 }
 
 func (client *Client) GetDaemonSets() (*v1beta1.DaemonSetList, error) {
