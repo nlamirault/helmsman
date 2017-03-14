@@ -21,7 +21,15 @@ Launch UI (example with [minikube][] configuration):
 
     $ helmsman -kubeconfig ~/.kube/config
 
-Type <kbd>C-q</kbd> to exit.
+
+### Key Bindings
+
+Key                                                            | Description
+---------------------------------------------------------------|---------------------------------------
+<kbd>C-q</kbd>                                                 | Exit.
+<kbd>Tab</kbd>                                                 | Switch between menu and view
+<kbd>Up</kbd>,<kbd>Down</kbd>,<kbd>Left</kbd>,<kbd>Right</kbd> | Move cursor
+<kbd>Ctrl+d</kbd>                                              | Describe Kubernetes entity
 
 
 ## Contributing
