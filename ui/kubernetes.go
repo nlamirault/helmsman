@@ -17,6 +17,7 @@ package ui
 import (
 	"fmt"
 
+	"github.com/golang/glog"
 	"github.com/jroimartin/gocui"
 
 	"github.com/nlamirault/helmsman/k8s"
@@ -81,6 +82,7 @@ func printK8SNodes(v *gocui.View, client *k8s.Client) {
 }
 
 func printK8SNodeDescription(v *gocui.View, name string, client *k8s.Client) {
+	glog.V(2).Infof("Description for node: %s", name)
 	v.Title = name
 	node, err := client.GetNode(name)
 	if err != nil {
@@ -129,7 +131,7 @@ func printK8SServices(v *gocui.View, client *k8s.Client) {
 			fmt.Fprintf(v, "  * \033[97;01mCreation:\033[0m %s\n", service.CreationTimestamp)
 			fmt.Fprintf(v, "  * \033[97;01mPorts:\033[0m\n")
 			for _, port := range service.Spec.Ports {
-				fmt.Fprintf(v, "    - %s [%s] %s -> %s\n", port.Name, port.Protocol, port.Port, port.TargetPort)
+				fmt.Fprintf(v, "    - %s [%s] %d -> %d\n", port.Name, port.Protocol, port.Port, port.TargetPort)
 			}
 			fmt.Fprintf(v, "  * \033[97;01mExternal IPs:\033[0m\n")
 			for _, ip := range service.Spec.ExternalIPs {

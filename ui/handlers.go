@@ -179,7 +179,6 @@ func cursorUpHandler(g *gocui.Gui, v *gocui.View) error {
 }
 
 func kubernetesMenuDispatcher(g *gocui.Gui, v *gocui.View, client *k8s.Client) error {
-	glog.V(2).Info("Select cursor")
 	if v != nil {
 		_, cy := v.Cursor()
 		l, err := v.Line(cy)
@@ -226,7 +225,7 @@ func kubernetesMenuDispatcher(g *gocui.Gui, v *gocui.View, client *k8s.Client) e
 		case k8sConfigMaps:
 			printK8SConfigMaps(view, client)
 		}
-		glog.V(2).Infof("Active view: =========> %s\n", view.Name())
+		// glog.V(2).Infof("Active view: =========> %s\n", view.Name())
 		if _, err := g.SetCurrentView(mainViewName); err != nil {
 			return err
 		}
@@ -234,17 +233,17 @@ func kubernetesMenuDispatcher(g *gocui.Gui, v *gocui.View, client *k8s.Client) e
 	return nil
 }
 
-func kubernetesDescriptionDispatcher(g *gocui.Gui, v *gocui.View, client *k8s.Client) error {
-	if v != nil {
-		_, cy := v.Cursor()
-		line, err := v.Line(cy)
+func kubernetesDescriptionDispatcher(g *gocui.Gui, view *gocui.View, client *k8s.Client) error {
+	if view != nil {
+		_, cy := view.Cursor()
+		line, err := view.Line(cy)
 		if err != nil {
 			line = ""
 		}
-		view, err := g.View(detailViewName)
-		if err != nil {
-			return err
-		}
+		// view, err := g.View(detailViewName)
+		// if err != nil {
+		// 	return err
+		// }
 		view.Clear()
 		// view.Editable = true
 		view.Highlight = true
@@ -254,7 +253,7 @@ func kubernetesDescriptionDispatcher(g *gocui.Gui, v *gocui.View, client *k8s.Cl
 		if len(data) < 2 {
 			return fmt.Errorf("Can't extract Kubernetes information: %s", line)
 		}
-		glog.Infof("----> %s\n", view.Name())
+		// glog.Infof("----> %s ==========> %s ========> %s\n", v.Name(), v.Title, line)
 		switch view.Title {
 		case k8sNamespaces:
 			fmt.Fprintf(view, "1111111&")
@@ -285,7 +284,6 @@ func kubernetesDescriptionDispatcher(g *gocui.Gui, v *gocui.View, client *k8s.Cl
 		case k8sConfigMaps:
 			fmt.Fprintf(view, "14444444444444")
 		}
-		glog.Infof("#################### Active view %s", view.Name())
 		if _, err := setCurrentViewOnTop(g, view.Name()); err != nil {
 			return err
 		}
