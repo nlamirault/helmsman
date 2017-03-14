@@ -1,4 +1,4 @@
-// Copyright (C) 2016 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+// Copyright (C) 2016, 2017 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -211,8 +211,8 @@ func kubernetesMenuDispatcher(g *gocui.Gui, v *gocui.View, client *k8s.Client) e
 			printK8SReplicationControllers(view, client)
 		case k8sDaemonSets:
 			printK8SDaemonSets(view, client)
-		case k8sJobs:
-			printK8SJobs(view, client)
+		// case k8sJobs:
+		// 	printK8SJobs(view, client)
 		case k8sPods:
 			printK8SPods(view, client)
 		case k8sServices:

@@ -1,4 +1,4 @@
-// Copyright (C) 2016 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+// Copyright (C) 2016, 2017 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -207,17 +207,17 @@ func printK8SDaemonSets(v *gocui.View, client *k8s.Client) {
 	}
 }
 
-func printK8SJobs(v *gocui.View, client *k8s.Client) {
-	jobs, err := client.GetJobs()
-	if err != nil {
-		fmt.Fprintf(v, "\033[31;01mKubernetes error:\n%s\033[0m", err.Error())
-	} else {
-		// fmt.Fprintf(v, "Jobs:\n\n")
-		for _, job := range jobs.Items {
-			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", job.Name)
-		}
-	}
-}
+// func printK8SJobs(v *gocui.View, client *k8s.Client) {
+// 	jobs, err := client.GetJobs()
+// 	if err != nil {
+// 		fmt.Fprintf(v, "\033[31;01mKubernetes error:\n%s\033[0m", err.Error())
+// 	} else {
+// 		// fmt.Fprintf(v, "Jobs:\n\n")
+// 		for _, job := range jobs.Items {
+// 			fmt.Fprintf(v, "> \033[32;01m%s\033[0m\n", job.Name)
+// 		}
+// 	}
+// }
 
 func printK8SPods(v *gocui.View, client *k8s.Client) {
 	pods, err := client.GetPods()

@@ -19,8 +19,8 @@ import (
 
 	"github.com/golang/glog"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/pkg/api"
 	"k8s.io/client-go/pkg/api/v1"
 	"k8s.io/client-go/pkg/apis/extensions/v1beta1"
 	"k8s.io/client-go/tools/clientcmd"
@@ -50,61 +50,61 @@ func NewKubernetesClient(kubeconfigPath string) (*Client, error) {
 }
 
 func (client *Client) GetNamespaces() (*v1.NamespaceList, error) {
-	return client.Clientset.Core().Namespaces().List(api.ListOptions{})
+	return client.Clientset.Core().Namespaces().List(metav1.ListOptions{})
 }
 
 func (client *Client) GetNodes() (*v1.NodeList, error) {
-	return client.Clientset.Core().Nodes().List(api.ListOptions{})
+	return client.Clientset.Core().Nodes().List(metav1.ListOptions{})
 }
 
 func (client *Client) GetNode(name string) (*v1.Node, error) {
-	return client.Clientset.Core().Nodes().Get(name)
+	return client.Clientset.Core().Nodes().Get(name, metav1.GetOptions{})
 }
 
 func (client *Client) GetPersistentVolumes() (*v1.PersistentVolumeList, error) {
-	return client.Clientset.Core().PersistentVolumes().List(api.ListOptions{})
+	return client.Clientset.Core().PersistentVolumes().List(metav1.ListOptions{})
 }
 
 func (client *Client) GetDeployments() (*v1beta1.DeploymentList, error) {
-	return client.Clientset.Extensions().Deployments("").List(api.ListOptions{})
+	return client.Clientset.Extensions().Deployments("").List(metav1.ListOptions{})
 }
 
 func (client *Client) GetReplicaSets() (*v1beta1.ReplicaSetList, error) {
-	return client.Clientset.Extensions().ReplicaSets("").List(api.ListOptions{})
+	return client.Clientset.Extensions().ReplicaSets("").List(metav1.ListOptions{})
 }
 
 func (client *Client) GetReplicationControllers() (*v1.ReplicationControllerList, error) {
-	return client.Clientset.Core().ReplicationControllers("").List(api.ListOptions{})
+	return client.Clientset.Core().ReplicationControllers("").List(metav1.ListOptions{})
 }
 
 func (client *Client) GetDaemonSets() (*v1beta1.DaemonSetList, error) {
-	return client.Clientset.Extensions().DaemonSets("").List(api.ListOptions{})
+	return client.Clientset.Extensions().DaemonSets("").List(metav1.ListOptions{})
 }
 
-func (client *Client) GetJobs() (*v1beta1.JobList, error) {
-	return client.Clientset.Extensions().Jobs("").List(api.ListOptions{})
-}
+// func (client *Client) GetJobs() (*v1beta1.JobList, error) {
+// 	return client.Clientset.Extensions().Jobs("").List(metav1.ListOptions{})
+// }
 
 func (client *Client) GetPods() (*v1.PodList, error) {
-	return client.Clientset.Core().Pods("").List(api.ListOptions{})
+	return client.Clientset.Core().Pods("").List(metav1.ListOptions{})
 }
 
 func (client *Client) GetServices() (*v1.ServiceList, error) {
-	return client.Clientset.Core().Services("").List(api.ListOptions{})
+	return client.Clientset.Core().Services("").List(metav1.ListOptions{})
 }
 
 func (client *Client) GetIngresses() (*v1beta1.IngressList, error) {
-	return client.Clientset.Extensions().Ingresses("").List(api.ListOptions{})
+	return client.Clientset.Extensions().Ingresses("").List(metav1.ListOptions{})
 }
 
 func (client *Client) GetPersistentVolumeClaims() (*v1.PersistentVolumeClaimList, error) {
-	return client.Clientset.Core().PersistentVolumeClaims("").List(api.ListOptions{})
+	return client.Clientset.Core().PersistentVolumeClaims("").List(metav1.ListOptions{})
 }
 
 func (client *Client) GetSecrets() (*v1.SecretList, error) {
-	return client.Clientset.Core().Secrets("").List(api.ListOptions{})
+	return client.Clientset.Core().Secrets("").List(metav1.ListOptions{})
 }
 
 func (client *Client) GetConfigMaps() (*v1.ConfigMapList, error) {
-	return client.Clientset.Core().ConfigMaps("").List(api.ListOptions{})
+	return client.Clientset.Core().ConfigMaps("").List(metav1.ListOptions{})
 }
