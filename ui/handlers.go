@@ -31,70 +31,64 @@ var (
 	cmdIdx    = 0
 )
 
-func registerKeybindings(g *gocui.Gui, k8sclient *k8s.Client) error {
+func (tui *TUI) registerKeybindings() error {
 	glog.V(2).Info("Register keybindings")
+
 	// Set quit
-	if err := g.SetKeybinding("", gocui.KeyCtrlQ, gocui.ModNone, quitHandler); err != nil {
+	if err := tui.Gocui.SetKeybinding("", gocui.KeyCtrlQ, gocui.ModNone, quitHandler); err != nil {
 		return err
 	}
-	if err := g.SetKeybinding("", gocui.KeyCtrlH, gocui.ModNone, helpHandler); err != nil {
+	if err := tui.Gocui.SetKeybinding("", gocui.KeyCtrlH, gocui.ModNone, helpHandler); err != nil {
 		return err
 	}
 
 	// Submit a line
-	// if err := g.SetKeybinding("input", gocui.KeyEnter, gocui.ModNone, inputLineHandler); err != nil {
+	// if err := tui.Gocui.SetKeybinding("input", gocui.KeyEnter, gocui.ModNone, inputLineHandler); err != nil {
 	// 	return err
 	// }
 
 	// Tab
-	if err := g.SetKeybinding("", gocui.KeyTab, gocui.ModNone, nextViewHandler); err != nil {
+	if err := tui.Gocui.SetKeybinding("", gocui.KeyTab, gocui.ModNone, nextViewHandler); err != nil {
 		return err
 	}
 
 	// Cursors
-	if err := g.SetKeybinding(sideViewName, gocui.KeyArrowDown, gocui.ModNone, cursorDownHandler); err != nil {
+	if err := tui.Gocui.SetKeybinding(sideViewName, gocui.KeyArrowDown, gocui.ModNone, cursorDownHandler); err != nil {
 		return err
 	}
-	if err := g.SetKeybinding(sideViewName, gocui.KeyArrowUp, gocui.ModNone, cursorUpHandler); err != nil {
+	if err := tui.Gocui.SetKeybinding(sideViewName, gocui.KeyArrowUp, gocui.ModNone, cursorUpHandler); err != nil {
 		return err
 	}
-	if err := g.SetKeybinding(sideViewName, gocui.KeyEnter, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
-		return kubernetesMenuDispatcher(g, v, k8sclient)
+	if err := tui.Gocui.SetKeybinding(sideViewName, gocui.KeyEnter, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
+		return kubernetesMenuDispatcher(tui.Gocui, v, tui.KubernetesClient)
 	}); err != nil {
 		return err
 	}
-	if err := g.SetKeybinding(mainViewName, gocui.KeyArrowDown, gocui.ModNone, cursorDownHandler); err != nil {
+	if err := tui.Gocui.SetKeybinding(mainViewName, gocui.KeyArrowDown, gocui.ModNone, cursorDownHandler); err != nil {
 		return err
 	}
-	if err := g.SetKeybinding(mainViewName, gocui.KeyArrowUp, gocui.ModNone, cursorUpHandler); err != nil {
+	if err := tui.Gocui.SetKeybinding(mainViewName, gocui.KeyArrowUp, gocui.ModNone, cursorUpHandler); err != nil {
 		return err
 	}
 
 	// Details
-	if err := g.SetKeybinding(mainViewName, gocui.KeyCtrlD, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
-		return kubernetesDescriptionDispatcher(g, v, k8sclient)
+	if err := tui.Gocui.SetKeybinding(mainViewName, gocui.KeyCtrlD, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
+		return kubernetesDescriptionDispatcher(tui.Gocui, v, tui.KubernetesClient)
 	}); err != nil {
 		return err
 	}
-	if err := g.SetKeybinding(detailViewName, gocui.KeyCtrlW, gocui.ModNone, closeDetailsViewHandler); err != nil {
+	if err := tui.Gocui.SetKeybinding(detailViewName, gocui.KeyCtrlW, gocui.ModNone, closeDetailsViewHandler); err != nil {
 		return err
 	}
 
-	// Arrow up/down scrolls cmd history
-	// if err := g.SetKeybinding("input", gocui.KeyArrowUp, gocui.ModNone,
-	// 	func(g *gocui.Gui, v *gocui.View) error {
-	// 		scrollHistory(v, -1)
-	// 		return nil
-	// 	}); err != nil {
-	// 	return err
-	// }
-	// if err := g.SetKeybinding("input", gocui.KeyArrowDown, gocui.ModNone,
-	// 	func(g *gocui.Gui, v *gocui.View) error {
-	// 		scrollHistory(v, 1)
-	// 		return nil
-	// 	}); err != nil {
-	// 	return err
-	// }
+	// About
+	if err := tui.Gocui.SetKeybinding(mainViewName, gocui.KeyCtrlA, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
+		tui.showModal("about", "About Helmsman", 80, 80)
+		return nil
+	}); err != nil {
+		return err
+	}
+
 	return nil
 }
 

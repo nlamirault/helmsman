@@ -28,6 +28,7 @@ const (
 	inputViewName  = "input"
 	menuWidth      = 30
 	inputHeight    = 1
+	aboutViewName  = "about"
 )
 
 func layout(g *gocui.Gui) error {

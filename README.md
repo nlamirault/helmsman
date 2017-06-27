@@ -19,7 +19,8 @@ You can download the binaries :
 
 Launch UI (example with [minikube][] configuration):
 
-    $ helmsman -kubeconfig ~/.kube/config
+    $ export KUBECONFIG=$HOME/admin.conf
+    $ helmsman -kubeconfig $KUBECONFIG
 
 
 ### Key Bindings
